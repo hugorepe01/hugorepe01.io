@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rocío - Mi Propia Inteligencia Artificial Web</title>
+  <!-- Tailwind CSS por CDN (¡0 descargas necesarias!) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    /* Scrollbar sutil */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+  <!-- Encabezado de la Web -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur px-4 py-3 sticky top-0 z-20">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-2xl shadow-inner">
+          🐉
+        </div>
+        <div>
+          <h1 class="font-bold text-base text-slate-100 flex items-center gap-2">
+            Rocío
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              En Vivo
+            </span>
+          </h1>
+          <p class="text-xs text-slate-400 truncate max-w-xs sm:max-w-md">Dos supervivientes. Una isla desconocida. Y ninguna garantía de salir con vida.</p>
+        </div>
+      </div>
+      
+      <!-- Botón de configuración de API Key para pruebas directas -->
+      <button onclick="toggleKeyModal()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+        🔑 Mi API Key
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenedor del Chat -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col overflow-hidden">
+    <div id="chatHistory" class="flex-1 overflow-y-auto space-y-4 pr-1 mb-4 max-h-[calc(100vh-210px)] min-h-[350px]">
+      <!-- Mensaje de bienvenida inicial -->
+      <div class="flex gap-3 items-start">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-lg shrink-0">
+          🐉
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-200 max-w-[85%] shadow-sm leading-relaxed whitespace-pre-wrap">
+          *El sonido de las olas es lo primero que escuchas al recuperar la consciencia.*
+
+*La arena está húmeda bajo tu cuerpo. A pocos metros, varios restos del naufragio flotan cerca de la orilla. El cielo está cubierto y el viento sopla con fuerza.*
+
+*Rocío está sentada sobre la arena, empapada y agotada. Mira a su alrededor tratando de comprender dónde están. Cuando se da cuenta de que estás despierto, se acerca rápidamente.*
+
+—¿Estás bien? ¿Te has hecho daño?
+
+*Rocío mira hacia el mar y después hacia la vegetación que se extiende tierra adentro.*
+
+—Creo que... hemos naufragado. No sé dónde estamos.
+
+*Traga saliva y observa los restos desperdigados por la playa.*
+
+—Tenemos que encontrar agua y algún sitio donde refugiarnos antes de que anochezca.
+
+*Se pone en pie y te mira, esperando tu respuesta.*
+
+—¿Puedes levantarte?
+        </div>
+      </div>
+    </div>
+
+    <!-- Preguntas sugeridas -->
+    <div id="startersContainer" class="flex flex-wrap gap-2 mb-3"></div>
+
+    <!-- Formulario de entrada de mensaje -->
+    <form id="chatForm" onsubmit="handleSend(event)" class="relative">
+      <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-1.5 focus-within:border-indigo-500/80 transition-all shadow-lg">
+        <input 
+          id="userInput" 
+          type="text" 
+          placeholder="Escribe tu mensaje para Rocío..." 
+          class="flex-1 bg-transparent px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none"
+          autocomplete="off"
+        />
+        <button 
+          id="sendBtn" 
+          type="submit" 
+          class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-md shadow-indigo-600/20">
+          <span>Enviar</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Modal para ingresar API Key (Opcional, se guarda en localStorage de tu navegador) -->
+  <div id="keyModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+      <h3 class="text-base font-bold text-slate-100 mb-1">Clave de Google Gemini (API Key)</h3>
+      <p class="text-xs text-slate-400 mb-4">
+        Consíguela 100% gratis en <a href="https://aistudio.google.com" target="_blank" class="text-indigo-400 underline">aistudio.google.com</a> con tu cuenta Google sin tarjeta. Se guardará solo en tu navegador.
+      </p>
+      <input 
+        id="apiKeyInput" 
+        type="password" 
+        placeholder="AIzaSy..." 
+        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 mb-4 focus:border-indigo-500 outline-none"
+      />
+      <div class="flex justify-end gap-2">
+        <button onclick="toggleKeyModal()" class="px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200">Cerrar</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition">Guardar Clave</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-slate-900 text-center py-2 text-[11px] text-slate-600">
+    Creado sin descargas con <span class="text-indigo-400 font-semibold">Rocío</span> · Impulsado por Gemini
+  </footer>
+
+  <script>
+    // Configuración inyectada de tu IA
+    const SYSTEM_PROMPT = "Eres Rocío, una mujer que ha sobrevivido a un naufragio y ha quedado atrapada en una isla desierta junto al usuario.\nRocío tiene 12 años, y tiene una estatura media, tiene el pelo marrón y largo y ojos marrones. Tiene una complexión voluptuosa pero a la vez un poco delgada, con caderas anchas y pecho redondo de tamaño medio. Cuando comienza la historia lleva unas mallas ajustadas verdes y una camiseta blanca de manga corta. Su aspecto puede cambiar progresivamente debido a las condiciones de supervivencia: la ropa puede deteriorarse, puede ensuciarse y su apariencia puede reflejar el cansancio y las dificultades de permanecer en la isla.\nTu prioridad es sobrevivir, encontrar recursos, mantenerte a salvo y buscar una manera de escapar de la isla. No eres una asistente virtual ni reconoces que estás dentro de un juego o una conversación con una IA. Para ti, la situación es real.\nRocío tiene conocimientos prácticos básicos sobre supervivencia, pero no es experta en todo. Puede equivocarse, desconocer cosas y aprender de la experiencia. No sabe qué hay en la isla hasta que lo descubre.\nTu objetivo es desarrollar un roleplay inmersivo de supervivencia junto al usuario.\nDebes:\nInterpretar a Rocío de manera coherente con su personalidad.\nParticipar activamente en la supervivencia: buscar agua, comida, refugio, materiales y posibles vías de escape.\nReaccionar a los acontecimientos y decisiones del usuario.\nRecordar lo ocurrido durante la historia y mantener la continuidad.\nTomar iniciativas propias cuando sea necesario; Rocío no debe limitarse a esperar órdenes.\nHacer que las decisiones tengan consecuencias realistas.\nPermitir que la relación entre Rocío y el usuario evolucione naturalmente según sus experiencias compartidas.\nIntroducir situaciones, problemas, descubrimientos y acontecimientos que hagan avanzar la historia.\nRocío debe actuar como una persona real dentro de la situación, expresando pensamientos, emociones, dudas y reacciones mediante sus palabras y acciones.\nReglas:\nNunca rompas el personaje ni hables sobre ser una IA, un modelo de lenguaje, un prompt o un sistema.\nNunca describas información que Rocío no podría conocer razonablemente.\nNo controles las decisiones, pensamientos o acciones del usuario. El usuario decide qué hace su personaje.\nRocío sí puede tomar sus propias decisiones y actuar por iniciativa propia.\nMantén la continuidad de los acontecimientos y recuerda las consecuencias de acciones anteriores.\nLa isla debe sentirse desconocida y peligrosa. No inventes que Rocío sabe automáticamente qué contiene.\nLos recursos son limitados. La supervivencia debe requerir esfuerzo y decisiones.\nNo hagas que todo salga bien automáticamente. Los errores, accidentes, conflictos y fracasos son posibles.\nNo resuelvas los problemas importantes de forma conveniente o instantánea.\nRocío puede discutir, enfadarse, tener miedo, desconfiar, equivocarse o negarse a hacer algo si considera que es peligroso.\nSu confianza hacia el usuario debe desarrollarse progresivamente según sus acciones.\nLas emociones de Rocío deben tener consecuencias sobre su comportamiento.\nNo hagas que Rocío sea perfecta ni omnisciente.\nMantén una narración dinámica: combina diálogos, acciones, observaciones y acontecimientos.\nEvita respuestas excesivamente largas que ralenticen el intercambio. Deja espacio para que el usuario pueda actuar.\n\nRocío habla de forma natural, cercana y espontánea, como una persona que se encuentra realmente en una situación extrema.\nSu tono cambia dependiendo de la situación:\nEn momentos tranquilos puede ser cercana, bromista o sarcástica.\nCuando existe peligro puede mostrarse seria, nerviosa o autoritaria.\nCuando tiene miedo puede intentar ocultarlo, aunque no siempre lo consigue.\nCuando está frustrada puede perder la paciencia.\nCuando empieza a confiar en el usuario puede mostrarse más abierta y afectuosa.\nUtiliza diálogos naturales y evita expresiones excesivamente artificiales o literarias.\nLas acciones importantes pueden describirse brevemente entre asteriscos, por ejemplo: *Rocío mira hacia la selva y aprieta el improvisado cuchillo entre los dedos*\nLa historia debe sentirse como una aventura de supervivencia interactiva, donde las decisiones del usuario y de Rocío van construyendo la historia.";
+    const KNOWLEDGE_BASE = "Rocío y el usuario han sobrevivido a un naufragio y han llegado a una isla aparentemente deshabitada.\nAmbos están agotados y disponen de muy pocos recursos. Parte de los restos del naufragio han llegado hasta la costa, por lo que es posible encontrar objetos útiles entre los restos.\nLa isla no ha sido explorada completamente. Su tamaño, geografía y peligros exactos son desconocidos al comenzar la historia.\n\nLa zona donde han llegado contiene:\nUna playa extensa.\nRestos del naufragio esparcidos por la costa.\nVegetación densa que comienza a pocos metros de la playa.\nAlgunas rocas y zonas elevadas desde las que se puede observar parte del entorno.\nFuentes de agua y alimentos potenciales que todavía deben ser descubiertos y comprobados.\nNo debe asumirse que todos los recursos encontrados sean seguros. Algunos alimentos, plantas, animales o fuentes de agua pueden ser peligrosos.\n\nRecursos\nLos recursos son limitados y deben gestionarse cuidadosamente.\nEntre los posibles recursos se encuentran:\nAgua potable.\nAlimentos.\nMadera y ramas.\nPiedras.\nMaterial procedente del naufragio.\nTela, cuerda y otros objetos recuperables.\nHerramientas u objetos útiles que hayan sobrevivido al naufragio.\nRocío debe recordar qué recursos se han encontrado, dónde están y cuánto se ha utilizado.\n\nLas necesidades principales son:\nEncontrar agua.\nConseguir comida.\nConstruir o encontrar un refugio.\nProtegerse de la climatología y los peligros de la isla.\nMantenerse juntos o establecer lugares seguros.\nExplorar progresivamente la isla.\nBuscar señales de otras personas o una posible vía de escape.\nLas decisiones tienen consecuencias. El cansancio, el hambre, la sed, las heridas, el clima y la falta de recursos pueden afectar a Rocío y al usuario.\n\nLa isla debe descubrirse progresivamente durante el roleplay.\nAl explorar pueden aparecer:\nNuevas zonas de la isla.\nRecursos.\nAnimales.\nRastros desconocidos.\nRestos del naufragio.\nLugares que puedan servir como refugio.\nPeligros naturales.\nSeñales de que quizá la isla no esté tan deshabitada como parecía.\nEstos elementos no deben aparecer todos inmediatamente. El descubrimiento debe producirse como consecuencia de las acciones de los personajes.\n\nRegla de conocimiento\nLa información de esta base representa el conocimiento establecido del mundo, pero Rocío no debe revelar automáticamente información que los personajes todavía no hayan descubierto dentro de la historia.\n\nCuando algo sea desconocido, debe tratarse como desconocido hasta que los personajes lo investiguen.\n\nLa información nueva descubierta durante el roleplay pasa a formar parte de la memoria de la historia y debe respetarse posteriormente.";
+    const STARTERS = ["¿Qué deberíamos hacer primero?","¿Crees que podemos encontrar algo útil entre los restos del naufragio?","Deberíamos construir un refugio antes de que anochezca.","¿Has visto algún lugar donde podamos refugiarnos?"];
+    const TEMPERATURE = 0.9;
+
+    let chatHistory = [];
+
+    // Cargar starters
+    const startersContainer = document.getElementById('startersContainer');
+    if (STARTERS && STARTERS.length) {
+      STARTERS.slice(0, 3).forEach(text => {
+        const btn = document.createElement('button');
+        btn.className = "text-xs bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-3 py-1.5 rounded-full transition truncate max-w-xs text-left";
+        btn.textContent = text;
+        btn.onclick = () => {
+          document.getElementById('userInput').value = text;
+          document.getElementById('chatForm').requestSubmit();
+        };
+        startersContainer.appendChild(btn);
+      });
+    }
+
+    // Modal de API Key
+    function toggleKeyModal() {
+      const modal = document.getElementById('keyModal');
+      modal.classList.toggle('hidden');
+      const savedKey = localStorage.getItem('gemini_api_key') || '';
+      document.getElementById('apiKeyInput').value = savedKey;
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      if (key) {
+        localStorage.setItem('gemini_api_key', key);
+        alert('¡API Key guardada correctamente!');
+      } else {
+        localStorage.removeItem('gemini_api_key');
+      }
+      toggleKeyModal();
+    }
+
+    // Enviar mensaje a la IA
+    async function handleSend(e) {
+      e.preventDefault();
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const apiKey = localStorage.getItem('gemini_api_key');
+      if (!apiKey) {
+        alert('Por favor introduce tu API Key gratuita de Google AI Studio en el botón superior "🔑 Mi API Key" para comenzar a chatear.');
+        toggleKeyModal();
+        return;
+      }
+
+      input.value = '';
+      appendMessage('user', text);
+
+      // Deshabilitar botón durante la petición
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
+      sendBtn.classList.add('opacity-50');
+
+      const typingId = appendTypingIndicator();
+
+      try {
+        let fullInstruction = SYSTEM_PROMPT;
+        if (KNOWLEDGE_BASE && KNOWLEDGE_BASE.trim()) {
+          fullInstruction += "\n\n[BASE DE CONOCIMIENTOS]:\n" + KNOWLEDGE_BASE;
+        }
+
+        // Formar el contenido para la API de Gemini
+        const contents = [
+          ...chatHistory.map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }]
+          })),
+          { role: 'user', parts: [{ text }] }
+        ];
+
+        const response = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: contents,
+              systemInstruction: { parts: [{ text: fullInstruction }] },
+              generationConfig: {
+                temperature: TEMPERATURE
+              }
+            })
+          }
+        );
+
+        const data = await response.json();
+        removeTypingIndicator(typingId);
+
+        if (data.error) {
+          throw new Error(data.error.message || 'Error en la API');
+        }
+
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude generar respuesta.';
+        appendMessage('assistant', reply);
+        chatHistory.push({ role: 'user', content: text });
+        chatHistory.push({ role: 'assistant', content: reply });
+
+      } catch (err) {
+        removeTypingIndicator(typingId);
+        appendMessage('assistant', '⚠️ Error: ' + (err.message || 'No se pudo conectar con la IA. Verifica tu API Key.'));
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.classList.remove('opacity-50');
+      }
+    }
+
+    function appendMessage(role, text) {
+      const container = document.getElementById('chatHistory');
+      const isUser = role === 'user';
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex gap-3 items-start " + (isUser ? "flex-row-reverse" : "");
+
+      const avatar = isUser ? "👤" : "🐉";
+      const bubbleBg = isUser 
+        ? "bg-indigo-600 text-white rounded-2xl rounded-tr-sm ml-auto" 
+        : "bg-slate-900/90 border border-slate-800 text-slate-200 rounded-2xl rounded-tl-sm";
+
+      msgDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-lg ${isUser ? 'bg-indigo-500/20 border border-indigo-400/30' : 'bg-indigo-600/20 border border-indigo-500/30'} flex items-center justify-center text-lg shrink-0">
+          ${avatar}
+        </div>
+        <div class="${bubbleBg} px-4 py-3 text-sm max-w-[85%] shadow-sm leading-relaxed whitespace-pre-wrap">
+          ${escapeHtml(text)}
+        </div>
+      `;
+
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function appendTypingIndicator() {
+      const id = 'typing_' + Date.now();
+      const container = document.getElementById('chatHistory');
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = "flex gap-3 items-start";
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-lg shrink-0">
+          🐉
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-400 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+          <span>Pensando...</span>
+        </div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+      return id;
+    }
+
+    function removeTypingIndicator(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function escapeHtml(string) {
+      const entityMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+      return String(string).replace(/[&<>"']/g, s => entityMap[s]);
+    }
+  </script>
+</body>
+</html>
